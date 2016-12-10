@@ -220,3 +220,6 @@ test <-
 test <- subset(test, test!= "")
 test
 movie_df$kill[w] <- test[7]
+
+## Here we have a first draft of dataset ready to be cleaned
+write_csv(movie_df, na = "kill_df")

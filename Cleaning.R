@@ -171,4 +171,6 @@ movie <- filter(movie, !is.na(Genre))
 
 movie <- movie %>% 
   select(name, date, kill, Director, Actors, Ratings, Entire.kill, Genre)
+
 write_csv(movie, na = "movie_tidy1_df")
+

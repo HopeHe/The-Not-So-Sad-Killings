@@ -180,6 +180,7 @@ test <-
   str_replace_all(" +", " ") %>%
   str_replace("For guidelines on how the counts are conducted please see here", "")
 
+movie[114, 5] <- "Entire Film: 236Cleric John Preston (Christian Bale): 118Preston's Breakdown (by ClericMike) Pitch Black Justice - 22Partridge gets a tracheotomy - 1Puppy Shootout - 13Sector 7 Beat Down - 8Not Without Incident - 9Hallway Deliverance - 53 DuPont's Office slice-n-dice - 8Brandt's Ownage - 1DuPont gets capped - 1Preston's Hegemony - 2 Contributing Sources: ClericMike | Equilibrium Fansite"
 test <- subset(test, test!= "")
 test[1] <- 
   test[1] %>%
@@ -218,7 +219,6 @@ test <-
   str_replace("For guidelines on how the counts are conducted please see here", "")
 
 test <- subset(test, test!= "")
-test
 movie_df$kill[w] <- test[7]
 
 ## Here we have a first draft of dataset ready to be cleaned

@@ -1,0 +1,122 @@
+---
+title: "Part 3. Data analysis"
+author: "Linfeng He"
+date: "12/18/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(tidyverse)
+library(ggthemes)
+```
+
+Due to the complexity of scrapping and cleaning, the first two parts were included in two seperate R script files "Progress" and "Cleaning". This markdown is solely focused on the analytics and visualization. 
+
+```{r}
+movie <- read_csv("movie_tidy1_df")
+```
+
+##### Overview
+As we observed that, the number of movies increased greatly over years. 
+  + I believe this might not be the best despiction of movie industry, due to the lack of sufficient data on the website.   
+  + Since R, PG and PG-13 rated movies took account of most of the movies, in addition to the fact that G, X and GP ratings were no longer effective. In the following analysis, only R, PG and PG-13 rated movies would be examined upon. 
+  
+```{r}
+movie1 <- 
+  movie %>% 
+  group_by(date, Ratings) %>%
+  mutate(`mean kills` = mean(`Total killed`))
+
+hist <- ggplot(movie1, aes(date, fill = Ratings))+ geom_histogram()
+hist + theme_bw() + scale_fill_brewer(type = "seq") + ggtitle("Movies produced by year")  + xlab("year")
+```
+
+Contrary to my original hypothesis that, there might be an upward trend on the number of people killed in the movies, as filming technology advances and movie budget bulges. This figures seem to mostly stay consistent less than 100 people per movie, with a few exceptional spikes which were largely due to some blockbuster movies (aka outliners) such as `The Lord of the Ring`. In the later graphs, the list which ranks the movies that killed the most people will make a better point explaining the spikes. 
+  
+```{r}
+movie2 <- filter(movie1, Ratings  == "PG-13"| Ratings == "PG" | Ratings == "R")
+ave <- ggplot(movie2, aes(date, `mean kills`, colour = Ratings)) + geom_point(alpha = 0.5) + geom_line() + xlab("year") + ylab("number of people killed") + ggtitle("Average people killed in the movie per year") 
+ave + theme_economist() + scale_colour_economist()
+
+```
+
+
+##### Genre 
+On the first attempt, there's a dot shows that there were almost 2000 people got killed in the movie, I inspected it and found that it was a data mismatch. So I fixed it mannually and give it another try. 
+
+As we can see, most of the killings take place in movies in which we expected a lot of people to die, for example, action, adventure, and crime, etc. One fact surprised me is that there were killings observed in `romance` movie. This is due to the fact that many movies were labeled with multiple genres.  Overall there is no significant pattern captured - Most of the movies stay below 200, and there are more observations in the action and adventure movies. In 2000s, a few movies reached above 400 people. Overall there are small increases in each genre.
+
+
+```{r}
+m <- ggplot(movie2) + geom_point(aes(date, `Total killed`, colour = Ratings), alpha = 0.5) + facet_wrap(~Genre)  + xlab("year") + ylab("People died in total") 
+m + theme_bw() + scale_colour_economist()
+```
+```{r}
+which(movie2$name == "Equilibrium")
+movie2$`Total killed`[105] <- as.integer(236)
+movie2$`Total killed`[465] <- as.integer(236)
+movie2$`Total killed`[842] <- as.integer(236)
+movie2$`Total killed`[1186] <- as.integer(236)
+movie2$`Total killed`[1538] <- as.integer(236)
+movie2$`Total killed`[1842] <- as.integer(236)
+
+m <- ggplot(movie2) + geom_point(aes(date, `Total killed`, colour = Ratings), alpha = 0.5) + facet_wrap(~Genre)  + xlab("year") + ylab("People died in total") 
+m + theme_bw() + scale_color_economist()
+```
+
+##### Subjects 
+No clear patterns were detected in each movie subject. One thing worthy to be mentioned is that lots of movies were based on the books. 
+
+```{r}
+m <- ggplot(movie2) + geom_point(aes(date, `Total killed`, colour = Ratings), alpha = 0.5) + facet_wrap(~`Movie Subject`)  + xlab("year") + ylab("People died in total") 
+m + theme_bw() +  scale_colour_economist()
+
+```
+
+##### Directors that `killed` the most
+
+```{r}
+movie.d <- 
+  movie2 %>%
+  ungroup() %>%
+  select(name, date, director,`Total killed`) %>%
+  unique() %>%
+  group_by(director) %>%
+  mutate(`Total director killed` = sum(`Total killed`)) 
+
+Dlist <- movie.d %>% arrange(desc(`Total director killed`))
+Dlist[1:50,]
+```
+
+##### The movies that the most people died in
+
+```{r}
+movie.t <- movie2 %>%
+  ungroup() %>% 
+  arrange(desc(`Total killed`))
+
+movie.t <- 
+  select(movie.t, name, date, `Total killed`) %>%
+  unique()
+
+movie.t[1:20,]
+```
+
+
+##### Actors/Actresses that `killed` the most
+
+Due to the difficulties extracting the number of people each actor/actress killed in the movie. I simply used the "Total killed" to summarize the actors/actresses that killed the most
+
+```{r}
+movie.c <- 
+  movie2 %>%
+  ungroup() %>%
+  select(name, date, Cast,`Total killed`) %>%
+  unique() %>%
+  group_by(Cast) %>%
+  mutate(`Total Actor/Actress killed` = sum(`Total killed`)) 
+
+movie.c <- movie.c %>% arrange(desc(`Total Actor/Actress killed`))
+movie.c[1:50,]
+```

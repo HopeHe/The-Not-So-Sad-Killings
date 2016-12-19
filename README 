@@ -1,0 +1,38 @@
+README 
+Linfeng He
+Dec 19th, 2016
+--------------------
+My whole project contains three parts: 
+1. Progress.R 
+The first R script `Progress` is for data scrapping from the website (moviebodycounts.com)
+I set the index page as the root, then first scrapped the linked to each index page. Within 
+the first for loop, there's another for loop which is for scrapping the links to each movie in
+that index page. 
+
+For example, when the first for loop access list "A" (http://www.moviebodycounts.com/movies-A.htm),
+the algorithn will extract the links to the movie page "Above the law", "Action Jackson" and "Alpha Dog" etc.
+Eventually, I got a list of urls to all the movies on my target website. 
+
+Next step, which is real web scrapping, the biggest challenge is the errors and failures I receive from scrapping 
+possibly because the servers were not capable of handling my relentless accesses. Thus I built a try-catch handler with 
+`System.Sleep` method. 
+
+Besides, the scrapping itself is also miserable. The contents of the website is contributed by individuals, so there's no 
+such thing as a format. Therefore, I cannot scrapped all the data I wanted with the same block of methods. So I can to 
+check it manually on some of the data entry and see if I have to apply another methods or changed the nodes I'm extracting from. 
+
+-------------------
+2. Cleaning.R
+Cleaning, as it is, consist of all the dirty work I need to make the data ready to be analyzed.
+The cleaning work also involves a lot of "try-check-modify-try again" cycles, largely because all the information 
+were stored in one column. What's worse? There are MILLIONS of typos and misspelled words in each column which made me 
+try over and over. The only part I'm not so satisfied is I cannot extract how many people got killed by each actor/actress 
+in the movie independently because of how the information is stored. (Or I didn't have enough time to figure out how I should do it)
+
+--------------------
+3. Part.3.Analysis.Rmd
+The real analysis part. 
+
+--------------------
+EXTRA. DATA
+Alongside with R scripts and R markdown I also uploaded all the data which includes the raw data and clean data. 

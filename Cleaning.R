@@ -16,15 +16,30 @@ for(i in 1:length(movie$movie_list)){
 }
 ## LAST THREE DOESN'T HAVE ANY ENOUGH INFOMATION
 ## So we are done extracting information from the info 
+
+## date
 movie$date <- 
   movie$date %>%
   str_extract("[0-9]{4}") %>%
   as.numeric()
+
+## director
 movie$Director <- 
   movie$Director %>%
   str_replace("Director: ","") %>%
   str_replace("Directors:","") %>%
   str_trim()
+
+movie <- separate(movie, Director, into = c("d1","d2","d3","d4","d5"), sep = ",")
+movie <- gather(movie, `d1`:`d5`, key = "d", value = "director")
+
+movie$director <- 
+  movie$director %>%
+  str_replace("Director:|Fake trailers:", "") %>%
+  str_trim()
+movie <- filter(movie, !is.na(director))
+
+## Killed figures 
 movie$`Total killed` <-
   movie$kill %>%
   str_extract("[0-9]+") %>%
@@ -111,7 +126,7 @@ movie <- separate(movie, subject, into = c("s1","s2","s3", "s4"), sep = ",")
 movie <- gather(movie, `s1`:`s4`, key = "s", value = "Movie Subject")
 movie <- filter(movie, !is.na(`Movie Subject`))
 
-movie <- select(movie, name, date, Director, Ratings, `Total killed`, Genre, Cast, `Movie Subject`)
+movie <- select(movie, name, date, director, Ratings, `Total killed`, Genre, Cast, `Movie Subject`)
 
 write_csv(movie, path = "movie_tidy1_df")
 
